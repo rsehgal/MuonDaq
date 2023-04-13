@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <atomic>
 #include <fcntl.h>
-
+#include <TROOT.h>
 //ROOT related header file
 #include <TFile.h>
 #include <TTree.h>
@@ -27,14 +27,14 @@ std::atomic<bool> stop_flag(false);
 //std::atomic<bool>
 //bool stop_flag = false;
 // Enabled boards
-std::vector<bool> board = {false,false,true,true, false};
-std::vector<std::string> ipVec = {"200.100.100.12", "200.100.100.14", "200.100.100.15", "200.100.100.17",
-                                  "200.100.100.7"};
+std::vector<bool> board = {true,true,true,true};
+std::vector<std::string> ipVec = {"200.100.100.12", "200.100.100.14", "200.100.100.15", "200.100.100.17"};
 
-std::vector<unsigned short> threshold = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
-std::vector<unsigned short> threshold_1 = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
-std::vector<unsigned short> portVec = {60102, 60104, 60105, 60107, 60109};
-std::vector<std::string> boardVec={"Board_2","Board_4","Board_5","Board_7","Board_9"};
+std::vector<unsigned short> threshold = {10, 10, 10, 10, 10, 10, 10, 10};
+//std::vector<unsigned short> threshold = {25, 25, 25, 25, 25, 25, 25, 25, 25, 25};
+std::vector<unsigned short> threshold_1 = {10, 10, 10, 10, 10, 10, 10, 10};
+std::vector<unsigned short> portVec = {60102, 60104, 60105, 60107};
+std::vector<std::string> boardVec={"Board_2","Board_4","Board_5","Board_7"};
 // Common settings
 unsigned short coincWindow = 24; // ns //iMultiplier //values needs to be checked
 unsigned short coincWindow_1 = coincWindow / 4;
@@ -52,14 +52,19 @@ int ClockAvailable(short int *msg) { return (msg[5] & 0x0008); }
 int StartCounter(short int *msg) { return (msg[5] & 0x0010); }
 int ClockOk(short int *msg) { return (msg[5] & 0x0020); }
 void handle_signal(int signal) {
+	std::cout << "Handlke_Signal called............" << std::endl;
   if (signal == SIGINT) {
+	  std::cout << "Signal : " << signal << std::endl;
     stop_flag.store(true);
+    return ;
+    //return 0 ;
   }
+  //return 1;
 }
 
 int startUPDServer(int thread_num, int portnum) {
   std::cout << "Entered UDPServer........"<<std::endl;
-  stop_flag = false;
+  //stop_flag = false;
   //signal(SIGINT, handle_signal);
   // Create socket
   int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -94,7 +99,7 @@ int startUPDServer(int thread_num, int portnum) {
   }
 
   std::cout << "Reachecd checkpoint 2 ........ " << std::endl;
-  short int msg[150];
+  short int msg[740];
   //short int *msg;
   struct sockaddr_in srcaddr;
   socklen_t addrlen = sizeof(srcaddr);
@@ -102,8 +107,8 @@ int startUPDServer(int thread_num, int portnum) {
   ssize_t numbytes = 0;
   while(numbytes <=0 )
   {
-  numbytes = recvfrom(sockfd, msg, sizeof(msg), 0, (struct sockaddr *)&srcaddr, &addrlen);
-  std::cout << "Number of bytes received : " << numbytes << std::endl;
+  numbytes = recvfrom(sockfd, msg, 1480, 0, (struct sockaddr *)&srcaddr, &addrlen);
+  //std::cout << "Number of bytes received : " << numbytes << std::endl;
   }
   //numbytes = recvfrom(sockfd, NULL, 0, 0, (struct sockaddr *)&srcaddr, &addrlen);
   std::cout <<"Size of msg : " << numbytes << std::endl;
@@ -121,14 +126,18 @@ int startUPDServer(int thread_num, int portnum) {
   unsigned long int fineTStampFar = 0;
   long int delT;
 
+  int longGateA = 0;
+  int longGateB = 0;
+  double qMean = 0.;
+
   TTree *tree = new TTree("ftree", "ftree");
   tree->Branch("fTNear", &fineTStampNear);
   tree->Branch("fTFar", &fineTStampFar);
   tree->Branch("fDelT", &delT);
-  /*tree->Branch("fDelT_WithoutConversion", &delT_WithoutConversion);
+  /*tree->Branch("fDelT_WithoutConversion", &delT_WithoutConversion);*/
   tree->Branch("fQNear", &longGateA);
   tree->Branch("fQFar", &longGateB);
-  tree->Branch("fQMean", &qMean);*/
+  tree->Branch("fQMean", &qMean);
 
   std::cout << "Reachecd checkpoint 4 ........ now entering loop " << std::endl;
   // Receive packets
@@ -142,11 +151,14 @@ int startUPDServer(int thread_num, int portnum) {
     //socklen_t addrlen = sizeof(srcaddr);
 
     //ssize_t numbytes = 0;
-    numbytes = recvfrom(sockfd, msg, sizeof(msg), 0, (struct sockaddr *)&srcaddr, &addrlen);
+    numbytes = recvfrom(sockfd, msg, 1480, 0, (struct sockaddr *)&srcaddr, &addrlen);
 
-    if (numbytes == -1) {
+    /*if (numbytes == -1) {
 	continue;
     }
+    */
+
+
     /*
     else{
 	 //   msg = new short int[numbytes];
@@ -157,7 +169,7 @@ int startUPDServer(int thread_num, int portnum) {
       return -1;
     }*/
 
-
+    if(numbytes > 1){
     unsigned long int Coarse_time_stamp_Near_1=  ((msg[18]<< 16)& 0xffff0000)+ (msg[17]& 0xffff)  ;
     Coarse_time_stamp_Near_1 =Coarse_time_stamp_Near_1 & 0x00000000ffffffff ;
 
@@ -181,6 +193,12 @@ int startUPDServer(int thread_num, int portnum) {
     fineTStampNear = (Coarse_time_stamp_Near-(1.*fineTStampNear/65536.))*4;
     fineTStampFar = (Coarse_time_stamp_Far-(1.*fineTStampFar/65536.))*4;
     delT = fineTStampFar - fineTStampNear;
+
+    longGateA = (((msg[431] << 16) & 0xffff0000)+(msg[430] & 0xffff ));
+    longGateB = (((msg[441] << 16) & 0xffff0000)+(msg[440] & 0xffff ));
+    longGateA = std::abs(longGateA);
+    longGateB = std::abs(longGateB);
+    qMean = std::sqrt(longGateA*longGateB);
     tree->Fill();
 
     //std::cout << "IP : " << ipAdd << " :: fineTStampNear : " << fineTStampNear <<" : fineTStampFar : " << fineTStampFar << std::endl;
@@ -191,15 +209,18 @@ int startUPDServer(int thread_num, int portnum) {
       StopDAQ(ipAdd.c_str());
       break;
     }*/
+
+    }
   }
 
   
-  StopDAQ(ipAdd.c_str());
-  fp->cd();
-  //tree->Write();
+  //StopDAQ(ipAdd.c_str());
+  //fp->cd();
+  tree->SetDirectory(fp);
+  tree->Write();
   fp->Close();
   close(sockfd);
-  std::cout <<"Returning from thread : " << ipAdd << std::endl;
+  std::cout << "Stop_Flag : " << stop_flag.load() << " : Returning from thread : " << ipAdd << std::endl;
   return 0;
 }
 
@@ -236,7 +257,7 @@ int ConnectBoard(const char *ip) {
   std::cout << "Checking clock : " << (int)data1[2] << std::endl;
   data1[3] = 0x00;
   for (unsigned short i = 4; i < 500; i++) {
-    data1[i] = 0;
+    data1[i] = 0x00;
   }
   size_t datalen = std::strlen(data1);
   std::cout << "Data len : " << datalen << std::endl;
@@ -247,7 +268,7 @@ int ConnectBoard(const char *ip) {
     return -1;
   }
 
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  //std::this_thread::sleep_for(std::chrono::seconds(1));
 
   data1[2] = 0x00 | (ClkSrc << 1);
   if (sendto(sockfd, data1, 500, 0, (struct sockaddr *)&destaddr, sizeof(destaddr)) == -1) {
@@ -266,7 +287,9 @@ int ConnectBoard(const char *ip) {
  */
 void Connect() {
   for (unsigned short i = 0; i < board.size(); i++) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     if (board[i]) {
+      std::cout << "Sending connection packet to : " << ipVec[i] << std::endl;
       ConnectBoard(ipVec[i].c_str());
     }
   }
@@ -313,14 +336,17 @@ int SetDAQ() {
   data1[12] = 0x14;
 
   for (unsigned short i = 13; i < 24; i++) {
-    data1[i] = i;
+    data1[i] = 0x00;// i;
   }
   for (unsigned short i = 24; i < 500; i++) {
-    data1[i] = i; // 0x00;
+    data1[i] = 0x00;
   }
 
+  std::string ip;
   for (unsigned short i = 0; i < board.size(); i++) {
     if (board[i]) {
+      ip = ipVec[i];
+      std::this_thread::sleep_for(std::chrono::milliseconds(200));
       threshold_1[2 * i] = threshold[2 * i] * 32;
       threshold_1[2 * i + 1] = threshold[2 * i + 1] * 32;
       data1[8] = (threshold_1[2 * i] & 0xFF);
@@ -334,8 +360,10 @@ int SetDAQ() {
         return -1;
       }
     }
+  std::cout <<"Starting DAQ from board with IP : " << ip << std::endl;
   }
-  std::cout <<"REturning from SetDAQ....."<< std::endl;
+  //std::cout <<"REturning from SetDAQ....."<< std::endl;
+  close(sockfd);
 }
 /*
  * This function will send a packet with DAQ parameters
@@ -411,6 +439,7 @@ int SetParameters() {
   float fgain = 0.75;
   for (unsigned short i = 0; i < board.size(); i++) {
     if (board[i]) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(200));
       threshold_1[2 * i] = threshold[2 * i] * 32 * fgain;
       threshold_1[2 * i + 1] = threshold[2 * i + 1] * 32 * fgain;
       data1[8] = (threshold_1[2 * i] & 0xFF);
@@ -467,11 +496,12 @@ data1[10]=(coincWindow_1 & 0xFF);
 data1[11]=((coincWindow_1 >> 8) & 0xFF);
 
 for(unsigned short i = 12 ; i < 500 ; i++){
-data1[i]=i;//0x00;
+data1[i]=0x00; //i
 }
 
 //for(unsigned short i = 0 ; i < board.size() ; i++)
 unsigned short boardId = DetectBoardId(ip);
+std::cout << "StopDAQ called for IP : " << ip << " : BoardID : " << boardId << std::endl;
 {
         if(board[boardId]){
                 threshold_1[2*boardId]=threshold[2*boardId]*32;
@@ -488,6 +518,8 @@ unsigned short boardId = DetectBoardId(ip);
 
         }
 }
+  close(sockfd);
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
 
 /*int main() {

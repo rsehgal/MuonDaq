@@ -20,19 +20,27 @@ int main(int argc, char *argv[]) {
   Connect();
   SetParameters();
   SetDAQ();
-  signal(SIGINT, handle_signal); 
+  //signal(SIGINT, handle_signal); 
   while(stop_flag.load()){
   	std::cout << "Stop flag set to : " << stop_flag.load() << std::endl;
 	std::cout <<"All the thread should now report back to main program " << std::endl;
+  }
+
+  while(true){
+  int a = 1;
+  std::cin >> a;
+  if(a==0){
+  	stop_flag.store(true);
+	break;
+  }
   }
   //Waiting for threads to finish their work 
   for (unsigned short i = 0; i < threadVec.size(); i++) {
     threadVec[i].join();
   }
 
-
   for (unsigned short i = 0; i < board.size(); i++) {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     if (board[i]) {
       StopDAQ(ipVec[i].c_str());
     }

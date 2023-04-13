@@ -23,5 +23,14 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/inc/*.h)
 add_executable(main main.cpp ${sources} ${headers})
 target_link_libraries(main ${ROOT_LIBRARIES} -pthread -lncurses)
 
+add_executable(main2 main2.cpp ${sources} ${headers})
+target_link_libraries(main2 ${ROOT_LIBRARIES} -pthread -lncurses)
+
+add_executable(startThreads startThreads.cpp ${sources} ${headers})
+target_link_libraries(startThreads ${ROOT_LIBRARIES} -pthread -lncurses)
+
 add_executable(stop stop.cpp ${sources} ${headers})
 target_link_libraries(stop ${ROOT_LIBRARIES} -pthread -lncurses)
+
+#add_executable(DAQ DAQ.cpp ${sources} ${headers})
+#target_link_libraries(DAQ ${ROOT_LIBRARIES} -pthread -lncurses)
