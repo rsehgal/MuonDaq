@@ -8,6 +8,7 @@
 #include <vector>
 #include <csignal>
 int main(int argc, char *argv[]) {
+  ReadConf();
   StopDAQ(argv[1]);
   return 0;
 }

@@ -5,12 +5,14 @@
 */
 #include "daq.h"
 //#include "common.h"
+#include <TROOT.h>
+#include <csignal>
 #include <iostream>
 #include <vector>
-#include <csignal>
-#include <TROOT.h>
 int main(int argc, char *argv[]) {
-	ROOT::EnableThreadSafety();
+  ROOT::EnableThreadSafety();
+  ReadConf();
+  // return 0;
   std::vector<std::thread> threadVec;
   runnum = GetRunNumber();
   for (unsigned short i = 0; i < board.size(); i++) {
@@ -22,22 +24,23 @@ int main(int argc, char *argv[]) {
   Connect();
   SetParameters();
   SetDAQ();
-  //signal(SIGINT, handle_signal); 
+  // signal(SIGINT, handle_signal);
   /*while(stop_flag.load()){
-  	std::cout << "Stop flag set to : " << stop_flag.load() << std::endl;
-	std::cout <<"All the thread should now report back to main program " << std::endl;
+        std::cout << "Stop flag set to : " << stop_flag.load() << std::endl;
+        std::cout <<"All the thread should now report back to main program " << std::endl;
   }*/
 
-  //while(true){
-  while(cont_mode){
-  int a = 1;
-  std::cin >> a;
-  if(a==0){
-  	stop_flag.store(true);
-	break;
+  // while(true){
+  std::cout << "CONT_MODE : " << cont_mode << std::endl;
+  while (cont_mode) {
+    int a = 1;
+    std::cin >> a;
+    if (a == 0) {
+      stop_flag.store(true);
+      break;
+    }
   }
-  }
-  //Waiting for threads to finish their work 
+  // Waiting for threads to finish their work
   for (unsigned short i = 0; i < threadVec.size(); i++) {
     threadVec[i].join();
   }
@@ -51,9 +54,7 @@ int main(int argc, char *argv[]) {
   }
   */
 
-
-
-  //Giving final stop message
+  // Giving final stop message
   /*while (true) {
     if (stop_flag) {
       std::cout << "Found Stop flag set ......." << std::endl;
