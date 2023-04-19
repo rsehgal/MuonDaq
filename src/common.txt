@@ -1,0 +1,17 @@
+#include <fstream>
+unsigned int GetRunNumber(){
+  std::ifstream infile("runnum.txt");
+  unsigned int runnum=0;
+  infile >> runnum;
+  infile.close();
+
+  std::ofstream outfile("runnum.txt");
+  outfile << ++runnum;
+  outfile.close();
+
+  runnum--;
+
+  return runnum;
+
+}
+
