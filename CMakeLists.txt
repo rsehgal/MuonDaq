@@ -25,29 +25,21 @@ include_directories(${ROOT_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/inc/*.h)
-add_executable(main main.cpp ${sources} ${headers})
-target_link_libraries(main ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
 
-add_executable(main2 main2.cpp ${sources} ${headers})
-target_link_libraries(main2 ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
+add_executable(runDaq runDaq.cpp ${sources} ${headers})
+target_link_libraries(runDaq ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
 
-add_executable(startThreads startThreads.cpp ${sources} ${headers})
-target_link_libraries(startThreads ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
-
-add_executable(stop stop.cpp ${sources} ${headers})
+add_executable(stop test/stop.cpp ${sources} ${headers})
 target_link_libraries(stop ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
 
-add_executable(connect connect.cpp ${sources} ${headers})
+add_executable(connect test/connect.cpp ${sources} ${headers})
 target_link_libraries(connect ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
 
-add_executable(connectBoard connectBoard.cpp ${sources} ${headers})
+add_executable(connectBoard test/connectBoard.cpp ${sources} ${headers})
 target_link_libraries(connectBoard ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
 
-add_executable(setparameters setparameters.cpp ${sources} ${headers})
+add_executable(setparameters test/setparameters.cpp ${sources} ${headers})
 target_link_libraries(setparameters ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
 
-add_executable(Test_RunNum Test_RunNum.cpp ${sources} ${headers})
+add_executable(Test_RunNum test/Test_RunNum.cpp ${sources} ${headers})
 target_link_libraries(Test_RunNum ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
-
-#add_executable(DAQ DAQ.cpp ${sources} ${headers})
-#target_link_libraries(DAQ ${ROOT_LIBRARIES} -pthread -lncurses)
