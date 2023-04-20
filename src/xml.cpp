@@ -36,7 +36,8 @@ void ReadConf() {
     int coinc = 0;
     int extclock = 0;
     int Cont_Mode = 0;
-    unsigned short timeForFile=0;
+    int saveWave = 0;
+    unsigned short timeForFile = 0;
     std::cout << "Node name: " << node->Value() << std::endl;
     if (std::string(node->Value()) == "common") {
       const XMLAttribute *attr = node->ToElement()->FirstAttribute();
@@ -51,10 +52,12 @@ void ReadConf() {
           if (std::string(attr->Name()) == "cont_mode") {
             Cont_Mode = std::stoi(attr->Value());
           }
-	  if (std::string(attr->Name()) == "time") {
+          if (std::string(attr->Name()) == "time") {
             timeForFile = std::stoi(attr->Value());
           }
-
+          if (std::string(attr->Name()) == "saveWaveForm") {
+            saveWave = std::stoi(attr->Value());
+          }
 
           attr = attr->Next();
         }
@@ -75,6 +78,11 @@ void ReadConf() {
         cont_mode = false;
       }
       timeForEachFile = timeForFile;
+      if (saveWave == 1) {
+        saveWaveForm = true;
+      } else {
+        saveWaveForm = false;
+      }
     }
 
     if (std::string(node->Value()) == "board") {

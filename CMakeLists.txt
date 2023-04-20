@@ -43,3 +43,6 @@ target_link_libraries(setparameters ${ROOT_LIBRARIES} -pthread -lncurses ${TINYX
 
 add_executable(Test_RunNum test/Test_RunNum.cpp ${sources} ${headers})
 target_link_libraries(Test_RunNum ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
+
+add_executable(WaveForm test/WaveForm.cpp ${sources} ${headers})
+target_link_libraries(WaveForm ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})

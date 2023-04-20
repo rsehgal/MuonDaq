@@ -15,6 +15,9 @@ public:
   int longGateB = 0;
   double qMean = 0.;
 
+  std::vector<short int> nearWaveForm;
+  std::vector<short int> farWaveForm;
+
   unsigned int localRunnum = 0;
   unsigned short fboardId = 0;
   TTree *tree;
@@ -22,4 +25,6 @@ public:
 
   void Write();
   void Fill();
+  void push_back(unsigned short sample,bool near);
+  void Reset();
 };

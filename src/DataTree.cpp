@@ -2,6 +2,25 @@
 #include "DataTree.h"
 #include "daq.h"
 DataTree::DataTree() {}
+void DataTree::push_back(unsigned short sample, bool near) {
+  if (near) {
+    nearWaveForm.push_back(sample);
+  } else {
+    farWaveForm.push_back(sample);
+  }
+}
+
+void DataTree::Reset() {
+  currentTStamp = 0;
+  fineTStampNear = 0;
+  fineTStampFar = 0;
+  delT = 0;
+  longGateA = 0;
+  longGateB = 0;
+  qMean = 0;
+  nearWaveForm.clear();
+  farWaveForm.clear();
+}
 
 DataTree::DataTree(unsigned short boardId, unsigned int runnum) {
   // DataTree::DataTree(unsigned short boardId){
@@ -20,6 +39,10 @@ DataTree::DataTree(unsigned short boardId, unsigned int runnum) {
   tree->Branch("fQNear", &longGateA);
   tree->Branch("fQFar", &longGateB);
   tree->Branch("fQMean", &qMean);
+  if (saveWaveForm) {
+    tree->Branch("fNearWaveForm", &nearWaveForm);
+    tree->Branch("fFarWaveForm", &farWaveForm);
+  }
 }
 // No Run number
 DataTree::DataTree(unsigned short boardId) {
@@ -40,6 +63,10 @@ DataTree::DataTree(unsigned short boardId) {
   tree->Branch("fQNear", &longGateA);
   tree->Branch("fQFar", &longGateB);
   tree->Branch("fQMean", &qMean);
+  if (saveWaveForm) {
+    tree->Branch("fNearWaveForm", &nearWaveForm);
+    tree->Branch("fFarWaveForm", &farWaveForm);
+  }
 }
 
 void DataTree::Fill() { tree->Fill(); }

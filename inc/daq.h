@@ -25,7 +25,7 @@ extern bool startDAQ;   //= false;
 extern char Clock_mode; //= 0; // External clock
 extern char Trig_mode;  //= 0;  // Coincidence
 extern char ClkSrc;     //= 0;
-
+extern bool saveWaveForm;
 extern bool cont_mode;
 extern std::atomic<bool> stop_flag;
 // extern bool stop_flag;

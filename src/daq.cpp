@@ -31,6 +31,7 @@ char Clock_mode;                 //= 1; // External clock
 char Trig_mode;                  //= 1;  // Coincidence
 char ClkSrc;                     //= 1;
 bool cont_mode;                  //= true;
+bool saveWaveForm;               //= false
 std::vector<bool> board;         //= {true,true,true,true};
 std::vector<TFile *> fileVec;    //={NULL,NULL,NULL,NULL};
 std::vector<DataTree *> treeVec; //={NULL,NULL,NULL,NULL};
@@ -202,8 +203,8 @@ int startUPDServer(int thread_num, int portnum) {
   unsigned int eventCounter = 0;
   while (!stop_flag.load()) {
     if (eventCounter > 1) {
-      //if ((treeVec[boardId]->currentTStamp - prevTStamp) > 60) {
-      if ((treeVec[boardId]->currentTStamp - prevTStamp) > (timeForEachFile*60)) {
+      // if ((treeVec[boardId]->currentTStamp - prevTStamp) > 60) {
+      if ((treeVec[boardId]->currentTStamp - prevTStamp) > (timeForEachFile * 60)) {
         std::cout << "Eventcounter : " << eventCounter << " : CurrentTStamp : " << treeVec[boardId]->currentTStamp
                   << " : prevTStamp : " << prevTStamp << std::endl;
         prevTStamp = treeVec[boardId]->currentTStamp;
@@ -244,6 +245,7 @@ int startUPDServer(int thread_num, int portnum) {
     }*/
 
     if (numbytes > 1) {
+      treeVec[boardId]->Reset();
       eventCounter++;
       unsigned long int Coarse_time_stamp_Near_1 = ((msg[18] << 16) & 0xffff0000) + (msg[17] & 0xffff);
       Coarse_time_stamp_Near_1 = Coarse_time_stamp_Near_1 & 0x00000000ffffffff;
@@ -274,6 +276,15 @@ int startUPDServer(int thread_num, int portnum) {
       treeVec[boardId]->qMean = std::sqrt(treeVec[boardId]->longGateA * treeVec[boardId]->longGateB);
       treeVec[boardId]->currentTStamp = GetCurrentTimeStamp();
       // treeVec[boardId]->tree->Fill();
+      if (saveWaveForm) {
+        for (unsigned short w = 25; w < 226; w++) {
+          treeVec[boardId]->push_back(msg[w], true);
+        }
+        for (unsigned short w = 227; w < 428; w++) {
+          treeVec[boardId]->push_back(msg[w], false);
+        }
+      }
+
       treeVec[boardId]->Fill();
 
       // std::cout << "IP : " << ipAdd << " :: fineTStampNear : " << fineTStampNear <<" : fineTStampFar : " <<
