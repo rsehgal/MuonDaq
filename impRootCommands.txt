@@ -1,0 +1,25 @@
+root [7] ftree->Scan("fTNear:fTFar","fTNear>0 && fTFar>0")
+
+
+root [40] tr7->Draw("fQMean>>h7_mu(8000,0,8000.0)")
+root [41] tr7->Draw("fQMean>>h7_mu(8000,0,15000.0)")
+root [42] tr7->Draw("fQMean>>h7_mu(8000,0,32000.0)")
+root [43] tr7->Draw("fQMean")
+root [44] 
+root [44] 
+root [44] tr7->Draw("fQMean>>h7_mu(8000,0,8000.0)")
+root [45] tr5->Draw("fQMean>>h5_mu(8000,0,8000.0)")
+root [46] tr4->Draw("fQMean>>h4_mu(8000,0,8000.0)")
+root [47] tr2->Draw("fQMean>>h2_mu(8000,0,8000.0)")
+root [48] h7_mu->SetTitle("h7")
+root [49] h5_mu->SetTitle("h5")
+root [50] h4_mu->SetTitle("h4")
+root [51] h2_mu->SetTitle("h2")
+root [52] 
+root [52] 
+root [52] h7_mu->Draw("hist")
+root [53] h5_mu->Draw("histsame")
+root [54] h2_mu->Draw("histsame")
+root [55] h4_mu->Draw("histsame")
+root [56] c1->BuildLegend()
+
