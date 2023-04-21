@@ -27,6 +27,7 @@ unsigned int runnum = 0;
 bool startDAQ = false;
 
 //**************** Going to Fill this block from READCONF ******************
+std::string File_prefix;
 char Clock_mode;                 //= 1; // External clock
 char Trig_mode;                  //= 1;  // Coincidence
 char ClkSrc;                     //= 1;
@@ -632,7 +633,9 @@ std::string GenerateFileName() {
   // Format filename string
   std::ostringstream filename;
   filename << std::put_time(local_time, "ED_DIGI_%d_%m_%Y_%Hhr_%Mmin_%Ssec") << ".root";
-  return filename.str();
+  std::string finalFileName = File_prefix+filename.str();
+  return finalFileName;
+  //return filename.str();
 }
 /*int main() {
   Connect();

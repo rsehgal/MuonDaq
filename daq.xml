@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<common coinc="1" extclock="0" cont_mode="0" time="1" saveWaveForm='1'>Common Setting</common>
-        <board name="Board2" ip="200.100.100.12" port="60102" th1="10" th2="10" enable="0">Board2</board> 
-	<board name="Board4" ip="200.100.100.14" port="60104" th1="10" th2="10" enable="0">Board4</board> 
+	<common coinc="1" extclock="1" cont_mode="1" time="30" saveWaveForm='1' prefix='CosmicData_Diff_Det_'>Common Setting</common>
+        <board name="Board2" ip="200.100.100.12" port="60102" th1="10" th2="10" enable="1">Board2</board> 
+	<board name="Board4" ip="200.100.100.14" port="60104" th1="10" th2="10" enable="1">Board4</board> 
 	<board name="Board5" ip="200.100.100.15" port="60105" th1="10" th2="10" enable="1">Board5</board>
 	<!-- This line and also the next one is comment and will be ignored by the reader -->
 	<!-- <board name="Board5" ip="200.100.100.18" th1="10" th2="10" enable="1">Board5</board> -->
-	<board name="Board7" ip="200.100.100.17" port="60107" th1="15" th2="15" enable="1">Board7</board>
+	<board name="Board7" ip="200.100.100.17" port="60107" th1="10" th2="10" enable="1">Board7</board>
 </root>
