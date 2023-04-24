@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<common coinc="1" extclock="1" cont_mode="1" time="30" saveWaveForm='1' prefix='CosmicData_Diff_Det_'>Common Setting</common>
+	<common coinc="1" 
+		extclock="1" 
+		cont_mode="1" 
+		time="30" 
+		numOfEvents="50000" 
+		timeNormalization="0" 
+		saveWaveForm='1' 
+		prefix='CosmicData_Diff_Det_'>
+		Common Setting
+	</common>
         <board name="Board2" ip="200.100.100.12" port="60102" th1="10" th2="10" enable="1">Board2</board> 
 	<board name="Board4" ip="200.100.100.14" port="60104" th1="10" th2="10" enable="1">Board4</board> 
 	<board name="Board5" ip="200.100.100.15" port="60105" th1="10" th2="10" enable="1">Board5</board>

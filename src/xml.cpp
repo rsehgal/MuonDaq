@@ -38,6 +38,8 @@ void ReadConf() {
     int Cont_Mode = 0;
     int saveWave = 0;
     std::string prefix="";
+    int NumOfEvents=0;
+    int TimeNormalization=0;
     unsigned short timeForFile = 0;
     std::cout << "Node name: " << node->Value() << std::endl;
     if (std::string(node->Value()) == "common") {
@@ -62,6 +64,12 @@ void ReadConf() {
 	  if (std::string(attr->Name()) == "prefix") {
             prefix = std::string(attr->Value());
           }
+	  if (std::string(attr->Name()) == "numOfEvents") {
+            NumOfEvents = std::stoi(attr->Value());
+          }
+	  if (std::string(attr->Name()) == "timeNormalization") {
+            TimeNormalization = std::stoi(attr->Value());
+          }
 
 
           attr = attr->Next();
@@ -76,6 +84,10 @@ void ReadConf() {
       ClkSrc = extclock;
       Trig_mode = coinc;
       File_prefix = prefix;
+      numOfEvents = NumOfEvents;
+      if(TimeNormalization==1){
+        timeNormalization=true;
+      }
       if (Cont_Mode == 1) {
         std::cout << "CONT MODE SET TO TRUE...." << std::endl;
         cont_mode = true;

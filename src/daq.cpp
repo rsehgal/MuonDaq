@@ -33,6 +33,8 @@ char Trig_mode;                  //= 1;  // Coincidence
 char ClkSrc;                     //= 1;
 bool cont_mode;                  //= true;
 bool saveWaveForm;               //= false
+int numOfEvents;
+bool timeNormalization;
 std::vector<bool> board;         //= {true,true,true,true};
 std::vector<TFile *> fileVec;    //={NULL,NULL,NULL,NULL};
 std::vector<DataTree *> treeVec; //={NULL,NULL,NULL,NULL};
@@ -177,6 +179,7 @@ int startUPDServer(int thread_num, int portnum) {
   OpenFile(boardId);
 
   unsigned long int prevTStamp = 0;
+  unsigned long int prevEventCounter=0;
 
   /*
   unsigned long int fineTStampNear = 0;
@@ -201,14 +204,23 @@ int startUPDServer(int thread_num, int portnum) {
   std::cout << "Reachecd checkpoint 4 ........ now entering loop " << std::endl;
   // Receive packets
   // while (true) {
-  unsigned int eventCounter = 0;
+  unsigned long int eventCounter = 0;
+  bool fileClosingCond = false;
+
   while (!stop_flag.load()) {
     if (eventCounter > 1) {
       // if ((treeVec[boardId]->currentTStamp - prevTStamp) > 60) {
-      if ((treeVec[boardId]->currentTStamp - prevTStamp) > (timeForEachFile * 60)) {
+      if(timeNormalization){
+	 fileClosingCond = (treeVec[boardId]->currentTStamp - prevTStamp) > (timeForEachFile * 60);
+      }else{
+         fileClosingCond = ((eventCounter-prevEventCounter) > numOfEvents);
+      }
+      if (fileClosingCond) 
+      {
         std::cout << "Eventcounter : " << eventCounter << " : CurrentTStamp : " << treeVec[boardId]->currentTStamp
                   << " : prevTStamp : " << prevTStamp << std::endl;
         prevTStamp = treeVec[boardId]->currentTStamp;
+	prevEventCounter = eventCounter;
         if (!cont_mode) {
           stop_flag.store(true);
           continue;

@@ -27,6 +27,8 @@ extern char Trig_mode;  //= 0;  // Coincidence
 extern char ClkSrc;     //= 0;
 extern std::string File_prefix;
 extern bool saveWaveForm;
+extern int numOfEvents;
+extern bool timeNormalization;
 extern bool cont_mode;
 extern std::atomic<bool> stop_flag;
 // extern bool stop_flag;

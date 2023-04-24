@@ -46,3 +46,6 @@ target_link_libraries(Test_RunNum ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML
 
 add_executable(WaveForm test/WaveForm.cpp ${sources} ${headers})
 target_link_libraries(WaveForm ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
+
+add_executable(Test_ReadConf test/Test_ReadConf.cpp ${sources} ${headers})
+target_link_libraries(Test_ReadConf ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
