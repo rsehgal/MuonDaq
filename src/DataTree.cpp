@@ -11,6 +11,7 @@ void DataTree::push_back(unsigned short sample, bool near) {
 }
 
 void DataTree::Reset() {
+  fBoardId = 0;
   currentTStamp = 0;
   fineTStampNear = 0;
   fineTStampFar = 0;
@@ -30,7 +31,9 @@ DataTree::DataTree(unsigned short boardId, unsigned int runnum) {
   // unsigned int runnum = GetRunNumber();
   std::string filename = boardVec[boardId] + "_Run_" + std::to_string(localRunnum) + "_" + GenerateFileName();
   fp = new TFile(filename.c_str(), "RECREATE");
+  
   tree = new TTree("ftree", "ftree");
+  tree->Branch("fBoardId", &fBoardId);
   tree->Branch("fCurrentTStamp", &currentTStamp);
   tree->Branch("fTNear", &fineTStampNear);
   tree->Branch("fTFar", &fineTStampFar);
@@ -55,6 +58,7 @@ DataTree::DataTree(unsigned short boardId) {
   std::string filename = boardVec[boardId] + "_" + GenerateFileName();
   fp = new TFile(filename.c_str(), "RECREATE");
   tree = new TTree("ftree", "ftree");
+  tree->Branch("fBoardId", &fBoardId);
   tree->Branch("fCurrentTStamp", &currentTStamp);
   tree->Branch("fTNear", &fineTStampNear);
   tree->Branch("fTFar", &fineTStampFar);

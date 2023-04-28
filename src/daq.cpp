@@ -33,6 +33,7 @@ char Trig_mode;                  //= 1;  // Coincidence
 char ClkSrc;                     //= 1;
 bool cont_mode;                  //= true;
 bool saveWaveForm;               //= false
+bool individualFile;               //= false
 int numOfEvents;
 bool timeNormalization;
 std::vector<bool> board;         //= {true,true,true,true};
@@ -276,6 +277,7 @@ int startUPDServer(int thread_num, int portnum) {
 
       // unsigned long int fineTStampNear = 0;
       // unsigned long int fineTStampFar = 0;
+      treeVec[boardId]->fBoardId = boardId;
       treeVec[boardId]->fineTStampNear = (msg[20] & 0xffff);
       treeVec[boardId]->fineTStampFar = (msg[24] & 0xffff);
       treeVec[boardId]->fineTStampNear =

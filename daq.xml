@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<common coinc="1" 
+	<common coinc="0" 
+		individualFile="0"
 		extclock="1" 
-		cont_mode="1" 
-		time="30" 
-		numOfEvents="50000" 
-		timeNormalization="0" 
-		saveWaveForm='1' 
-		prefix='CosmicData_Diff_Det_'>
+		cont_mode="0" 
+		time="1" 
+		numOfEvents="60000" 
+		timeNormalization="1" 
+		saveWaveForm='0' 
+		prefix='Na_Source_at_PMT4_5min_Singles_th_10_FULL_LowerBlock_'>
 		Common Setting
 	</common>
-        <board name="Board2" ip="200.100.100.12" port="60102" th1="10" th2="10" enable="1">Board2</board> 
+	<!-- 	Below board sequence is very important, as this actually defines the boardId, which 
+		we are storing in the root file as fBrCh. The boardId will be assigned starting from 
+		0 and then continuously increasing by 1. This is required, because otherwise after 
+		merging the root files from different boards, we will not be able to distinguish that
+		which event belongs to which board
+	-->
+        <board name="Board2" ip="200.100.100.12" port="60102" th1="3" th2="3" enable="0">Board2</board> 
 	<board name="Board4" ip="200.100.100.14" port="60104" th1="10" th2="10" enable="1">Board4</board> 
 	<board name="Board5" ip="200.100.100.15" port="60105" th1="10" th2="10" enable="1">Board5</board>
 	<!-- This line and also the next one is comment and will be ignored by the reader -->
 	<!-- <board name="Board5" ip="200.100.100.18" th1="10" th2="10" enable="1">Board5</board> -->
-	<board name="Board7" ip="200.100.100.17" port="60107" th1="10" th2="10" enable="1">Board7</board>
+	<board name="Board7" ip="200.100.100.17" port="60107" th1="10" th2="10" enable="0">Board7</board>
 </root>

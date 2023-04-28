@@ -40,6 +40,7 @@ void ReadConf() {
     std::string prefix="";
     int NumOfEvents=0;
     int TimeNormalization=0;
+    int IndividualFile=0;
     unsigned short timeForFile = 0;
     std::cout << "Node name: " << node->Value() << std::endl;
     if (std::string(node->Value()) == "common") {
@@ -70,6 +71,10 @@ void ReadConf() {
 	  if (std::string(attr->Name()) == "timeNormalization") {
             TimeNormalization = std::stoi(attr->Value());
           }
+	  if (std::string(attr->Name()) == "individualFile") {
+            IndividualFile = std::stoi(attr->Value());
+          }
+
 
 
           attr = attr->Next();
@@ -87,6 +92,9 @@ void ReadConf() {
       numOfEvents = NumOfEvents;
       if(TimeNormalization==1){
         timeNormalization=true;
+      }
+      if(IndividualFile==1){
+	individualFile = true;
       }
       if (Cont_Mode == 1) {
         std::cout << "CONT MODE SET TO TRUE...." << std::endl;

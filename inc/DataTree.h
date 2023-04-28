@@ -7,6 +7,7 @@ public:
   DataTree(unsigned short boardId, unsigned int runnum);
   DataTree(unsigned short boardId);
   ~DataTree();
+  unsigned short fBoardId=0;
   unsigned long int fineTStampNear = 0;
   unsigned long int fineTStampFar = 0;
   unsigned long int currentTStamp = 0;
