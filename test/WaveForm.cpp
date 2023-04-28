@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 
   Long64_t nentries = ftree->GetEntries();
 
-  nentries = 10;
+  nentries = std::atoi(argv[2]);//10;
 
   Long64_t nbytes = 0;
   std::vector<int> xvecNear;
