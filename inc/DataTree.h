@@ -8,6 +8,7 @@ public:
   DataTree(unsigned short boardId);
   ~DataTree();
   unsigned short fBoardId=0;
+  std::string fBoardName;
   unsigned long int fineTStampNear = 0;
   unsigned long int fineTStampFar = 0;
   unsigned long int currentTStamp = 0;
@@ -15,6 +16,12 @@ public:
   int longGateA = 0;
   int longGateB = 0;
   double qMean = 0.;
+
+  //single
+  unsigned short fChannelNo = 0;
+  unsigned long int fineTStamp = 0;
+  int longGate = 0;
+  std::vector<short int> fWaveForm;
 
   std::vector<short int> nearWaveForm;
   std::vector<short int> farWaveForm;
@@ -27,5 +34,7 @@ public:
   void Write();
   void Fill();
   void push_back(unsigned short sample,bool near);
+  void push_back(unsigned short sample);
+  void clear();
   void Reset();
 };

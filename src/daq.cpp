@@ -28,12 +28,13 @@ bool startDAQ = false;
 
 //**************** Going to Fill this block from READCONF ******************
 std::string File_prefix;
-char Clock_mode;                 //= 1; // External clock
-char Trig_mode;                  //= 1;  // Coincidence
-char ClkSrc;                     //= 1;
-bool cont_mode;                  //= true;
-bool saveWaveForm;               //= false
-bool individualFile;               //= false
+char Clock_mode;     //= 1; // External clock
+char Trig_mode;      //= 1;  // Coincidence
+bool coincidence;    //= 1;  // Coincidence
+char ClkSrc;         //= 1;
+bool cont_mode;      //= true;
+bool saveWaveForm;   //= false
+bool individualFile; //= false
 int numOfEvents;
 bool timeNormalization;
 std::vector<bool> board;         //= {true,true,true,true};
@@ -180,7 +181,7 @@ int startUPDServer(int thread_num, int portnum) {
   OpenFile(boardId);
 
   unsigned long int prevTStamp = 0;
-  unsigned long int prevEventCounter=0;
+  unsigned long int prevEventCounter = 0;
 
   /*
   unsigned long int fineTStampNear = 0;
@@ -211,17 +212,16 @@ int startUPDServer(int thread_num, int portnum) {
   while (!stop_flag.load()) {
     if (eventCounter > 1) {
       // if ((treeVec[boardId]->currentTStamp - prevTStamp) > 60) {
-      if(timeNormalization){
-	 fileClosingCond = (treeVec[boardId]->currentTStamp - prevTStamp) > (timeForEachFile * 60);
-      }else{
-         fileClosingCond = ((eventCounter-prevEventCounter) > numOfEvents);
+      if (timeNormalization) {
+        fileClosingCond = (treeVec[boardId]->currentTStamp - prevTStamp) > (timeForEachFile * 60);
+      } else {
+        fileClosingCond = ((eventCounter - prevEventCounter) > numOfEvents);
       }
-      if (fileClosingCond) 
-      {
+      if (fileClosingCond) {
         std::cout << "Eventcounter : " << eventCounter << " : CurrentTStamp : " << treeVec[boardId]->currentTStamp
                   << " : prevTStamp : " << prevTStamp << std::endl;
         prevTStamp = treeVec[boardId]->currentTStamp;
-	prevEventCounter = eventCounter;
+        prevEventCounter = eventCounter;
         if (!cont_mode) {
           stop_flag.store(true);
           continue;
@@ -278,6 +278,7 @@ int startUPDServer(int thread_num, int portnum) {
       // unsigned long int fineTStampNear = 0;
       // unsigned long int fineTStampFar = 0;
       treeVec[boardId]->fBoardId = boardId;
+      treeVec[boardId]->fBoardName = boardVec[boardId];
       treeVec[boardId]->fineTStampNear = (msg[20] & 0xffff);
       treeVec[boardId]->fineTStampFar = (msg[24] & 0xffff);
       treeVec[boardId]->fineTStampNear =
@@ -291,16 +292,38 @@ int startUPDServer(int thread_num, int portnum) {
       treeVec[boardId]->qMean = std::sqrt(treeVec[boardId]->longGateA * treeVec[boardId]->longGateB);
       treeVec[boardId]->currentTStamp = GetCurrentTimeStamp();
       // treeVec[boardId]->tree->Fill();
-      if (saveWaveForm) {
-        for (unsigned short w = 25; w < 226; w++) {
-          treeVec[boardId]->push_back(msg[w], true);
-        }
-        for (unsigned short w = 227; w < 428; w++) {
-          treeVec[boardId]->push_back(msg[w], false);
-        }
-      }
 
-      treeVec[boardId]->Fill();
+      if (coincidence) {
+        if (saveWaveForm) {
+          for (unsigned short w = 25; w < 226; w++) {
+            treeVec[boardId]->push_back(msg[w], true);
+          }
+          for (unsigned short w = 227; w < 428; w++) {
+            treeVec[boardId]->push_back(msg[w], false);
+          }
+        }
+
+        treeVec[boardId]->Fill();
+      } else {
+
+        treeVec[boardId]->fChannelNo = 2 * boardId;
+        treeVec[boardId]->fineTStamp = treeVec[boardId]->fineTStampNear;
+        treeVec[boardId]->longGate = treeVec[boardId]->longGateA;
+        for (unsigned short w = 25; w < 226; w++) {
+          treeVec[boardId]->push_back(msg[w]);
+        }
+        treeVec[boardId]->Fill();
+
+        treeVec[boardId]->clear();
+
+        treeVec[boardId]->fChannelNo = 2 * boardId + 1;
+        treeVec[boardId]->fineTStamp = treeVec[boardId]->fineTStampFar;
+        treeVec[boardId]->longGate = treeVec[boardId]->longGateB;
+        for (unsigned short w = 227; w < 428; w++) {
+          treeVec[boardId]->push_back(msg[w]);
+        }
+        treeVec[boardId]->Fill();
+      }
 
       // std::cout << "IP : " << ipAdd << " :: fineTStampNear : " << fineTStampNear <<" : fineTStampFar : " <<
       // fineTStampFar << std::endl;
@@ -647,9 +670,9 @@ std::string GenerateFileName() {
   // Format filename string
   std::ostringstream filename;
   filename << std::put_time(local_time, "ED_DIGI_%d_%m_%Y_%Hhr_%Mmin_%Ssec") << ".root";
-  std::string finalFileName = File_prefix+filename.str();
+  std::string finalFileName = File_prefix + filename.str();
   return finalFileName;
-  //return filename.str();
+  // return filename.str();
 }
 /*int main() {
   Connect();

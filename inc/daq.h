@@ -24,6 +24,7 @@ extern unsigned int runnum;
 extern bool startDAQ;   //= false;
 extern char Clock_mode; //= 0; // External clock
 extern char Trig_mode;  //= 0;  // Coincidence
+extern bool coincidence;  //= 0;  // Coincidence
 extern char ClkSrc;     //= 0;
 extern std::string File_prefix;
 extern bool saveWaveForm;

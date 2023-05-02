@@ -109,6 +109,11 @@ void ReadConf() {
       } else {
         saveWaveForm = false;
       }
+      if(coinc==1){
+	coincidence=true;
+      }else{
+	coincidence=false;
+      }
     }
 
     if (std::string(node->Value()) == "board") {
