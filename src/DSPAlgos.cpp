@@ -14,9 +14,9 @@ DSPAlgos::DSPAlgos() {
 DSPAlgos::DSPAlgos(unsigned short windowSize) : fWindowSize(windowSize) { fWaveForm = nullptr; }
 
 DSPAlgos::DSPAlgos(short threshold, unsigned short preTrigger, unsigned short baseline, unsigned short shortGate,
-                   unsigned short longGate, unsigned short windowSize)
+                   unsigned short longGate, unsigned short windowSize, double fraction, short delay)
     : fThreshold(threshold), fPretrigger(preTrigger), fBaseline(baseline), fShortGate(shortGate), fLongGate(longGate),
-      fWindowSize(windowSize) {
+      fWindowSize(windowSize), fFraction(fraction), fDelay(delay) {
   fWaveForm = nullptr;
 }
 
@@ -49,7 +49,43 @@ std::vector<short> DSPAlgos::SmoothenSignal() {
   return smoothed_signal;
 }
 void DSPAlgos::CalculateBaseline() {}
-void DSPAlgos::CalculateCFD() {}
+
+std::vector<short> DSPAlgos::CalculateCFD() {
+  fFraction = 0.5;
+  fDelay = 4;
+
+  std::vector<short> cfd_signal(fWaveForm->size());
+
+  // Calculate the CFD signal as the difference between the original signal and a fraction of the delayed signal
+  for (int i = fDelay; i < fWaveForm->size(); i++) {
+    short delayed_signal = fWaveForm->at(i - fDelay) * fFraction;
+    cfd_signal[i] = fWaveForm->at(i) - delayed_signal;
+  }
+
+  return cfd_signal;
+}
+
+std::vector<short> DSPAlgos::CalculateCFD(std::vector<short> signal) {
+
+  fFraction = 0.5;
+  fDelay = 4;
+  fWaveForm->clear();
+  fWaveForm->resize(signal.size());
+  for (unsigned int i = 0; i < fWaveForm->size(); i++) {
+    fWaveForm->at(i) = signal[i];
+  }
+
+  std::vector<short> cfd_signal(fWaveForm->size());
+
+  // Calculate the CFD signal as the difference between the original signal and a fraction of the delayed signal
+  for (int i = fDelay; i < fWaveForm->size(); i++) {
+    short delayed_signal = fWaveForm->at(i - fDelay) * fFraction;
+    cfd_signal[i] = fWaveForm->at(i) - delayed_signal;
+  }
+
+  return cfd_signal;
+}
+
 void DSPAlgos::CalculateIntegratedCharge() {}
 
 // Required Getters
@@ -61,3 +97,5 @@ unsigned short DSPAlgos::GetShortGate() const { return fShortGate; }
 unsigned short DSPAlgos::GetLongGate() const { return fLongGate; }
 short DSPAlgos::GetThreshold() const { return fThreshold; }
 unsigned short DSPAlgos::GetWindowSize() const { return fWindowSize; }
+double DSPAlgos::GetCFDFraction() const { return fFraction; }
+short DSPAlgos::GetCFDDelay() const { return fDelay; }

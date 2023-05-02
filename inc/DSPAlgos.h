@@ -22,16 +22,19 @@ private:
   unsigned short fShortGate;
   unsigned short fLongGate;
   unsigned short fWindowSize;
+  double fFraction;
+  short fDelay;
 
 public:
   DSPAlgos();
   DSPAlgos(unsigned short windowSize);
   DSPAlgos(short threshold, unsigned short preTrigger, unsigned short baseline, unsigned short shortGate,
-           unsigned short longGate,unsigned short windowSize);
+           unsigned short longGate,unsigned short windowSize,double fraction,short delay);
   // Required Processors
   std::vector<short> SmoothenSignal();
   void CalculateBaseline();
-  void CalculateCFD();
+  std::vector<short> CalculateCFD();
+  std::vector<short> CalculateCFD(std::vector<short> signal);
   void CalculateIntegratedCharge();
 
   // Requird Getters
@@ -43,6 +46,8 @@ public:
   unsigned short GetLongGate()const;
   short GetThreshold()const;
   unsigned short GetWindowSize()const;
+  double GetCFDFraction()const;
+  short GetCFDDelay()const;
 };
 
 #endif
