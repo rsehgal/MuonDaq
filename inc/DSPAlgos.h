@@ -28,14 +28,19 @@ private:
 public:
   DSPAlgos();
   DSPAlgos(unsigned short windowSize);
+  DSPAlgos(unsigned long int coarseTStamp,std::vector<short> *waveForm) ;
+  void Set(unsigned long int coarseTStamp,std::vector<short> *waveForm) ;
   DSPAlgos(short threshold, unsigned short preTrigger, unsigned short baseline, unsigned short shortGate,
            unsigned short longGate,unsigned short windowSize,double fraction,short delay);
   // Required Processors
   std::vector<short> SmoothenSignal();
-  void CalculateBaseline();
+  short CalculateBaseline(std::vector<short> *signal);
+  std::vector<short> CalculateBaselineSubtractedSignal();
+  std::vector<short> CalculateBaselineSubtractedSignal(std::vector<short> *signal);
   std::vector<short> CalculateCFD();
   std::vector<short> CalculateCFD(std::vector<short> signal);
   void CalculateIntegratedCharge();
+  void CalculateFineTStamp(std::vector<short> signal,bool ns=true);
 
   // Requird Getters
   unsigned long int GetCoarseTStamp() const;

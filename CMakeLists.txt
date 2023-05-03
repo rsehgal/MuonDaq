@@ -51,6 +51,9 @@ target_link_libraries(WaveForm ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_L
 add_executable(Test_SmoothWave test/DSP/Test_SmoothWave.cpp ${sources} ${headers})
 target_link_libraries(Test_SmoothWave ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
 
+add_executable(Test_Wave_DelT test/DSP/Test_Wave_DelT.cpp ${sources} ${headers})
+target_link_libraries(Test_Wave_DelT ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})
+
 
 add_executable(Test_ReadConf test/Test_ReadConf.cpp ${sources} ${headers})
 target_link_libraries(Test_ReadConf ${ROOT_LIBRARIES} -pthread -lncurses ${TINYXML2_LIBRARIES})

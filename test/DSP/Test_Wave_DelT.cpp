@@ -11,6 +11,7 @@
 #include <TTree.h>
 #include <iostream>
 #include <vector>
+#include <TH1F.h>
 using namespace std;
 
 TGraph* Plot(std::vector<short> *signal,std::string name){  
@@ -70,59 +71,59 @@ int main(int argc, char *argv[]) {
   ftree->SetBranchAddress("fQFar", &fQFar);
   ftree->SetBranchAddress("fQMean", &fQMean);
   ftree->SetBranchAddress("fNearWaveForm", &fNearWaveForm);
-  //ftree->SetBranchAddress("fNearWaveForm", &dsp.fWaveForm);
+  ftree->SetBranchAddress("fFarWaveForm", &fFarWaveForm);
 
-  DSPAlgos dsp;//(fCoarseTStampNear,fNearWaveForm);
-
+  DSPAlgos dspNear;//(fCoarseTStampNear,fNearWaveForm);
+  DSPAlgos dspFar;
   Long64_t nentries = ftree->GetEntries();
-  nentries = std::atoi(argv[2]);
+  //nentries = std::atoi(argv[2]);
 
   Long64_t nbytes = 0;
 
-  for (Long64_t i = nentries - 1; i < nentries; i++) {
+  unsigned long int fineTStampNear = 0;
+  unsigned long int fineTStampFar = 0;
+
+  TH1F *hist = new TH1F("DelT","DelT",80,-20,20);
+
+  //for (Long64_t i = nentries - 1; i < nentries; i++) {
+  for (Long64_t i = 1; i < nentries; i++) {
 
     nbytes += ftree->GetEntry(i);
 
-    dsp.Set(fCoarseTStampNear,fNearWaveForm);
-    std::cout << "CoarseTStampNear : " << fCoarseTStampNear <<" : CoarseTStampFar : " << fCoarseTStampFar << std::endl;
-    std::cout << fTNear << " : " << fTFar << " : " << fDelT << " : " << fQMean << std::endl;
-    std::cout << "Raman ............" << std::endl;
-    std::cout << "Size : " << dsp.fWaveForm->size() << std::endl;
+    //std::cout << fNearWaveForm->size() <<" : " << fFarWaveForm->size() << std::endl;
+    //continue;
 
-
-    std::vector<short> smooth_waveform = dsp.SmoothenSignal();
-    std::vector<short> baseline_subtracted_raw = dsp.CalculateBaselineSubtractedSignal();
-    std::vector<short> baseline_subtracted_smooth= dsp.CalculateBaselineSubtractedSignal(&smooth_waveform);
-
-    TGraph *grNear = Plot(dsp.fWaveForm,"Raw WaveForm");
-    can->cd(1);
-    grNear->Draw("acp");
-    TGraph *grSmooth = Plot(&smooth_waveform,"Smooth WaveForm");
-    can->cd(2);
-    grSmooth->Draw("acp");
-    TGraph *grBSRaw = Plot(&baseline_subtracted_raw,"Baseline subtracted Raw WaveForm");
-    can->cd(3);
-    grBSRaw->Draw("acp");
-    TGraph *grBSSmooth = Plot(&baseline_subtracted_smooth,"Baseline subtracted Smooth WaveForm");
-    can->cd(4);
-    grBSSmooth->Draw("acp");
-
-    std::vector<short> cfd_waveform = dsp.CalculateCFD(baseline_subtracted_raw);
-    std::vector<short> cfd_waveform_smooth = dsp.CalculateCFD(baseline_subtracted_smooth);
-
-    TGraph *grCFDRaw = Plot(&cfd_waveform,"CFD Raw WaveForm");
-    can->cd(5);
-    grCFDRaw->Draw("acp");
-    TGraph *grCFDSmooth = Plot(&cfd_waveform_smooth,"CFD Smooth WaveForm");
-    can->cd(6);
-    grCFDSmooth->Draw("acp");
-
+    dspNear.Set(fCoarseTStampNear,fNearWaveForm);
+    
+    std::vector<short> smooth_waveform = dspNear.SmoothenSignal();
+    std::vector<short> baseline_subtracted_smooth= dspNear.CalculateBaselineSubtractedSignal(&smooth_waveform);
+    std::vector<short> cfd_waveform_smooth = dspNear.CalculateCFD(baseline_subtracted_smooth);
 
     //dsp.CalculateFineTStamp(cfd_waveform_smooth);
-    dsp.CalculateFineTStamp(cfd_waveform_smooth,true);
-    std::cout << "Final FineTStamp in ps : " << dsp.GetFineTStamp() << std::endl;
+    dspNear.CalculateFineTStamp(cfd_waveform_smooth,true);
+    fineTStampNear = dspNear.GetFineTStamp();
+    //std::cout << "Final FineTStamp in ps : " << dsp.GetFineTStamp() << std::endl;
 
+
+    
+    dspFar.Set(fCoarseTStampFar,fFarWaveForm);
+
+    smooth_waveform = dspFar.SmoothenSignal();
+    baseline_subtracted_smooth= dspFar.CalculateBaselineSubtractedSignal(&smooth_waveform);
+    cfd_waveform_smooth = dspFar.CalculateCFD(baseline_subtracted_smooth);
+
+    //dsp.CalculateFineTStamp(cfd_waveform_smooth);
+    dspFar.CalculateFineTStamp(cfd_waveform_smooth,true);
+    fineTStampFar = dspFar.GetFineTStamp();
+
+    Long_t diff = fineTStampNear-fineTStampFar;
+    //hist->Fill(1.*diff/1000.);
+    diff = fCoarseTStampNear-fCoarseTStampFar;
+    hist->Fill(diff);
   }
+
+  hist->Draw();
+
 
     fApp->Run();
 }
