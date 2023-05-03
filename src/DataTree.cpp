@@ -17,6 +17,8 @@ void DataTree::Reset() {
   currentTStamp = 0;
   fineTStampNear = 0;
   fineTStampFar = 0;
+  fCoarseTStampNear = 0;
+  fCoarseTStampFar = 0;
   delT = 0;
   longGateA = 0;
   longGateB = 0;
@@ -28,6 +30,7 @@ void DataTree::Reset() {
   fChannelNo = 0;
   fineTStamp = 0;
   longGate = 0;
+  fCoarseTStamp = 0;
   fWaveForm.clear();
 }
 
@@ -48,6 +51,10 @@ DataTree::DataTree(unsigned short boardId, unsigned int runnum) {
   tree->Branch("fBoardId", &fBoardId);
 
   if (coincidence) {
+
+    tree->Branch("fCoarseTStampNear", &fCoarseTStampNear);
+    tree->Branch("fCoarseTStampFar", &fCoarseTStampFar);
+
     tree->Branch("fTNear", &fineTStampNear);
     tree->Branch("fTFar", &fineTStampFar);
     tree->Branch("fDelT", &delT);
@@ -61,6 +68,7 @@ DataTree::DataTree(unsigned short boardId, unsigned int runnum) {
     }
   } else {
     tree->Branch("fChannelNo", &fChannelNo);
+    tree->Branch("fCoarseTStamp", &fCoarseTStamp);
     tree->Branch("fTStamp", &fineTStamp);
     tree->Branch("fQlong", &longGate);
     if (saveWaveForm)
@@ -83,6 +91,9 @@ DataTree::DataTree(unsigned short boardId) {
   tree->Branch("fBoardName", &fBoardName);
   tree->Branch("fBoardId", &fBoardId);
   if (coincidence) {
+    tree->Branch("fCoarseTStampNear", &fCoarseTStampNear);
+    tree->Branch("fCoarseTStampFar", &fCoarseTStampFar);
+
     tree->Branch("fTNear", &fineTStampNear);
     tree->Branch("fTFar", &fineTStampFar);
     tree->Branch("fDelT", &delT);
@@ -95,6 +106,7 @@ DataTree::DataTree(unsigned short boardId) {
     }
   } else {
     tree->Branch("fChannelNo", &fChannelNo);
+    tree->Branch("fCoarseTStamp", &fCoarseTStamp);
     tree->Branch("fTStamp", &fineTStamp);
     tree->Branch("fQlong", &longGate);
     if (saveWaveForm)

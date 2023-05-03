@@ -302,6 +302,8 @@ int startUPDServer(int thread_num, int portnum) {
             treeVec[boardId]->push_back(msg[w], false);
           }
         }
+        treeVec[boardId]->fCoarseTStampNear = Coarse_time_stamp_Near * 4;
+        treeVec[boardId]->fCoarseTStampFar = Coarse_time_stamp_Far * 4;
 
         treeVec[boardId]->Fill();
       } else {
@@ -312,6 +314,7 @@ int startUPDServer(int thread_num, int portnum) {
         for (unsigned short w = 25; w < 226; w++) {
           treeVec[boardId]->push_back(msg[w]);
         }
+        treeVec[boardId]->fCoarseTStamp = Coarse_time_stamp_Near * 4;
         treeVec[boardId]->Fill();
 
         treeVec[boardId]->clear();
@@ -322,6 +325,7 @@ int startUPDServer(int thread_num, int portnum) {
         for (unsigned short w = 227; w < 428; w++) {
           treeVec[boardId]->push_back(msg[w]);
         }
+        treeVec[boardId]->fCoarseTStamp = Coarse_time_stamp_Far * 4;
         treeVec[boardId]->Fill();
       }
 

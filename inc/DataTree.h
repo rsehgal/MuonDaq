@@ -12,6 +12,8 @@ public:
   unsigned long int fineTStampNear = 0;
   unsigned long int fineTStampFar = 0;
   unsigned long int currentTStamp = 0;
+  unsigned long int fCoarseTStampNear = 0;
+  unsigned long int fCoarseTStampFar = 0;
   long int delT;
   int longGateA = 0;
   int longGateB = 0;
@@ -22,6 +24,7 @@ public:
   unsigned long int fineTStamp = 0;
   int longGate = 0;
   std::vector<short int> fWaveForm;
+  unsigned long int fCoarseTStamp=0;
 
   std::vector<short int> nearWaveForm;
   std::vector<short int> farWaveForm;
