@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include <TH1F.h>
+#include "colors.h"
 using namespace std;
 
 TGraph* Plot(std::vector<short> *signal,std::string name){  
@@ -84,6 +85,8 @@ int main(int argc, char *argv[]) {
   unsigned long int fineTStampFar = 0;
 
   TH1F *hist = new TH1F("DelT","DelT",1000,-500,500);
+  TH1F *histZero = new TH1F("DelTZero","DelTZero",1000,-100,100);
+  //TH1F *histZero = new TH1F("DelTZero","DelTZero",1000,100,300);
 
   //for (Long64_t i = nentries - 1; i < nentries; i++) {
   for (Long64_t i = 1; i < nentries; i++) {
@@ -104,7 +107,10 @@ int main(int argc, char *argv[]) {
     fineTStampNear = dspNear.GetFineTStamp();
     //std::cout << "Final FineTStamp in ps : " << dsp.GetFineTStamp() << std::endl;
 
-
+    double edZeroCrossVal = fCoarseTStampNear-fTNear;
+    double myZeroCrossVal = dspNear.CalculateZeroCrossing(cfd_waveform_smooth,true);
+    std::cout << RED << "EDZeroCrossVal : " << edZeroCrossVal << " : MYZeroCrossVal : " << myZeroCrossVal << std::endl;
+    //histZero->Fill(myZeroCrossVal);
     
     dspFar.Set(fCoarseTStampFar,fFarWaveForm);
 
@@ -122,8 +128,9 @@ int main(int argc, char *argv[]) {
     hist->Fill(diff);
   }
 
-  hist->Draw();
-
-
+/*  hist->Draw();
+  new TCanvas;
+  histZero->Draw("hist");
+*/
     fApp->Run();
 }
