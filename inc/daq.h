@@ -65,6 +65,9 @@ extern int BoardStatus(short int *msg);
 extern int ClockAvailable(short int *msg);
 extern int StartCounter(short int *msg);
 extern int ClockOk(short int *msg);
+extern int TriggerA(short int *msg);
+extern int TriggerB(short int *msg);
+extern int CoincidenceMode(short int *msg);
 
 extern void thread_func(int thread_num, int portnum);
 extern int startUPDServer(int thread_num, int portnum);

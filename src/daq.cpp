@@ -84,6 +84,10 @@ int BoardStatus(short int *msg) { return (msg[5] & 0x0100); }
 int ClockAvailable(short int *msg) { return (msg[5] & 0x0008); }
 int StartCounter(short int *msg) { return (msg[5] & 0x0010); }
 int ClockOk(short int *msg) { return (msg[5] & 0x0020); }
+int TriggerA(short int *msg) {return (msg[5] & 0x0200);}
+int TriggerB(short int *msg) {return (msg[5] & 0x0400);}
+int CoincidenceMode(short int *msg) {return (msg[5] & 0x0800);}
+
 void handle_signal(int signal) {
   std::cout << "Handlke_Signal called............" << std::endl;
   if (signal == SIGINT) {
@@ -156,20 +160,6 @@ int startUPDServer(int thread_num, int portnum) {
   socklen_t addrlen = sizeof(srcaddr);
 
   ssize_t numbytes = 0;
-  /*
-  while(numbytes <=0 )
-  {
-  numbytes = recvfrom(sockfd, msg, 1480, 0, (struct sockaddr *)&srcaddr, &addrlen);
-  //std::cout << "Number of bytes received : " << numbytes << std::endl;
-  }
-  //numbytes = recvfrom(sockfd, NULL, 0, 0, (struct sockaddr *)&srcaddr, &addrlen);
-  std::cout <<"Size of msg : " << numbytes << std::endl;
-
-  std::string ipAdd = std::string(inet_ntoa(srcaddr.sin_addr));
-  std::cout <<"Fetched IP addresss : " << ipAdd << std::endl;
-  unsigned short boardId = DetectBoardId(ipAdd.c_str());
-  //std::string filename=boardVec[boardId]+".root";
-  */
   unsigned short boardId = DetectBoardIdFromPort(portnum);
   std::string filename = boardVec[boardId] + "_" + GenerateFileName();
   std::string ipAdd = ipVec[boardId];
@@ -182,26 +172,6 @@ int startUPDServer(int thread_num, int portnum) {
 
   unsigned long int prevTStamp = 0;
   unsigned long int prevEventCounter = 0;
-
-  /*
-  unsigned long int fineTStampNear = 0;
-  unsigned long int fineTStampFar = 0;
-  unsigned long int currentTStamp = 0;
-  long int delT;
-  int longGateA = 0;
-  int longGateB = 0;
-  double qMean = 0.;
-
-  TTree *tree = new TTree("ftree", "ftree");
-  tree->Branch("fCurrentTStamp", &currentTStamp);
-  tree->Branch("fTNear", &fineTStampNear);
-  tree->Branch("fTFar", &fineTStampFar);
-  tree->Branch("fDelT", &delT);
-  //tree->Branch("fDelT_WithoutConversion", &delT_WithoutConversion);
-  tree->Branch("fQNear", &longGateA);
-  tree->Branch("fQFar", &longGateB);
-  tree->Branch("fQMean", &qMean);
-  */
 
   std::cout << "Reachecd checkpoint 4 ........ now entering loop " << std::endl;
   // Receive packets
@@ -235,30 +205,10 @@ int startUPDServer(int thread_num, int portnum) {
     }
     // signal(SIGINT, handle_signal);
     char buf[1500];
-    // short int *msg=NULL;
     short int msg[740];
-    // struct sockaddr_in srcaddr;
-    // socklen_t addrlen = sizeof(srcaddr);
-
-    // ssize_t numbytes = 0;
     numbytes = recvfrom(sockfd, msg, 1480, 0, (struct sockaddr *)&srcaddr, &addrlen);
 
-    /*if (numbytes == -1) {
-        continue;
-    }
-    */
-
-    /*
-    else{
-         //   msg = new short int[numbytes];
-    }
-    */
-    /*if (numbytes == -1) {
-      std::cerr << "Failed to receive packet.\n";
-      return -1;
-    }*/
-
-    if (numbytes > 1) {
+      if (numbytes > 1) {
       treeVec[boardId]->Reset();
       eventCounter++;
       unsigned long int Coarse_time_stamp_Near_1 = ((msg[18] << 16) & 0xffff0000) + (msg[17] & 0xffff);
@@ -308,6 +258,7 @@ int startUPDServer(int thread_num, int portnum) {
         treeVec[boardId]->Fill();
       } else {
 
+        if(TriggerA(msg)){
         treeVec[boardId]->fChannelNo = 2 * boardId;
         treeVec[boardId]->fineTStamp = treeVec[boardId]->fineTStampNear;
         treeVec[boardId]->longGate = treeVec[boardId]->longGateA;
@@ -316,9 +267,10 @@ int startUPDServer(int thread_num, int portnum) {
         }
         treeVec[boardId]->fCoarseTStamp = Coarse_time_stamp_Near * 4;
         treeVec[boardId]->Fill();
+        }
 
-        treeVec[boardId]->clear();
-
+        //treeVec[boardId]->clear();
+      if(TriggerB(msg)){
         treeVec[boardId]->fChannelNo = 2 * boardId + 1;
         treeVec[boardId]->fineTStamp = treeVec[boardId]->fineTStampFar;
         treeVec[boardId]->longGate = treeVec[boardId]->longGateB;
@@ -327,6 +279,7 @@ int startUPDServer(int thread_num, int portnum) {
         }
         treeVec[boardId]->fCoarseTStamp = Coarse_time_stamp_Far * 4;
         treeVec[boardId]->Fill();
+      }
       }
 
       // std::cout << "IP : " << ipAdd << " :: fineTStampNear : " << fineTStampNear <<" : fineTStampFar : " <<
